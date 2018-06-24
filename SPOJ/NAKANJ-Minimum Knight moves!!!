@@ -1,0 +1,70 @@
+#include<bits/stdc++.h>
+#define dbg(x) cerr << #x << " is: " << x << endl
+#define x first
+#define y second
+using namespace std;
+const int BIGN = 9999999;
+const int N = 8;
+const int Nodes = 64;
+bool board[Nodes];
+int moveReq[Nodes];
+vector<pair<int,int> > moves = {{-2,-1},{-2,+1},{-1,-2},{-1,2},{1,-2},{1,2},{2,-1},{2,1}};
+vector<int> graph[Nodes];
+void process(int p){
+    int i = p/N;
+    int j = p%N;
+    for(auto it: moves)
+        if((j+(it).x) >=0 && (j+(it).x) < N && (i+(it).y) <N && (i+(it).y) >=0){
+                int newNode = (i+(it).y)*N + (j+(it).x);
+                graph[p].push_back(newNode);
+            }
+}
+void firstOfAll(){
+    for(int i=0;i<Nodes;i++){
+        process(i);
+    }
+}
+int bfs(int now, int fin){
+    memset(board,false,sizeof(board));
+    board[now] = true;
+    moveReq[now] = 0;
+    if(board[fin]==true){
+        return moveReq[fin];
+    }
+    queue<int> Q;
+    Q.push(now);
+    while(!Q.empty()){
+        int here = Q.front();
+        Q.pop();
+        for(auto to: graph[here]){
+            if(!board[to]){
+                board[to] = true;
+                moveReq[to] = moveReq[here] + 1;
+                Q.push(to);
+                if(board[fin])return moveReq[fin];
+            }
+        }
+    }
+    assert(false);
+    return 0;
+}
+int main(){
+    #ifdef DEBUG
+        freopen("input.txt","r",stdin);
+    #endif
+    firstOfAll();
+    int tt;
+    cin >> tt;
+    while(tt--){
+        string from;
+        string to;
+        cin >> from;
+        cin >> to;
+        int f = from[0]-'a' + N*(8-(from[1]-'0')); // start pos
+        int t = to[0]-'a' + N*(8-(to[1]-'0'));  // destination pos
+        assert( f>=0 && f <=63);
+        assert( t>=0 && t <=63);
+        cout << bfs(f,t) <<"\n";
+    }
+    return 0;
+}
