@@ -1,0 +1,62 @@
+#include<bits/stdc++.h>
+using namespace std;
+int n;
+int m;
+vector<int> g[2010];
+vector<char> color(2010);
+void input(){
+	cin >> n >> m;
+	int a,b;
+	for(int i=0;i<m;i++){
+		cin >> a >> b;
+		g[a-1].push_back(b-1);
+		g[b-1].push_back(a-1);
+	}
+	fill(color.begin(),color.end(),'N');
+	// N = not-colored yet
+}
+bool bipartite(){
+	bool bi = true;
+	for(int i=0;i<n;i++){
+		if(color[i]=='N'){
+			queue<int> q;
+			q.push(i);
+			color[i] = 'a';
+			while(!q.empty()){
+				int here = q.front();
+				q.pop();
+				for(int v: g[here]){
+					if(color[v]=='N'){
+						color[v] = color[here]^'a'^'b';
+						q.push(v);
+					}else{
+						if(color[v]==color[here]){
+							bi = false;
+						}
+					}
+				}
+			}
+		}
+	}
+	return bi;
+}
+void refresh(){
+	for(int i=0;i<2010;i++){
+		g[i].clear();
+	}
+}
+int main(){
+	int tt;
+	cin >> tt;
+	for(int i=1;i<=tt;i++){
+		refresh();
+		input();
+		cout << "Scenario #" << i << ":\n";
+		if(bipartite()){
+			puts("No suspicious bugs found!");
+		}else{
+			puts("Suspicious bugs found!");
+		}
+	}
+	return 0;
+}
