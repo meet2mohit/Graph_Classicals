@@ -1,0 +1,67 @@
+#include<bits/stdc++.h>
+using namespace std;
+#define int long long
+vector<int> g[10010];
+vector<pair<int,pair<int,int> > > ed;
+int n;
+string s;
+vector<int> parent(10010);
+void refresh(){
+	for(int i=0;i<10010;i++){
+		g[i].clear();
+		parent[i]=i;
+	}
+	ed.clear();
+}
+void input(){
+	cin >> n;
+	int m,a,c;
+	for(int i=0;i<n;i++){
+		cin >> s;
+		cin >> m;
+		while(m--){
+			cin >> a >> c;
+			g[a-1].push_back(i);
+			g[i].push_back(a-1);
+			ed.push_back(make_pair(c,make_pair(i,a-1)));
+		}
+	}
+}
+int find(int u){
+	while(parent[u]!=u){
+		u = parent[u];
+	}
+	return u;
+}
+bool uni(int u, int v){
+	int pu = find(u);
+	int pv = find(v);
+	if(pv==pu){
+		return false;
+	}
+	parent[pu]=pv;
+	return true;
+}
+signed main(){
+	int tt;
+	cin >> tt;
+	while(tt--){
+		int cnt=0;
+		refresh();
+		input();
+		sort(ed.begin(),ed.end());
+		int edc=0;
+		int x=0;
+		while(edc < (n-1)){
+			int u = ed[x].second.first;
+			int v = ed[x].second.second;
+			if(uni(u,v)){
+				cnt+= ed[x].first;
+				edc++;
+			}
+			x++;
+		}
+		cout << cnt << endl;
+	}
+	return 0;
+}
