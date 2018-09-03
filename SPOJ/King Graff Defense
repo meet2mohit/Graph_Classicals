@@ -1,0 +1,97 @@
+#include <bits/stdc++.h>
+using namespace std;
+#define int long long
+const int N = 1e5+10;
+vector<int> g[N];
+vector<int> myvec;
+vector<int> lowlink(N,-1);
+vector<bool> vis(N,false);
+vector<int> idx(N,-1);
+int id=1;
+vector<bool> on(N,false);
+int n,m;
+int ans;
+void input(){
+	cin >> n >> m;
+	int a,b;
+	for(int i=0;i<m;i++){
+		cin >> a >> b;
+		g[a].push_back(b);
+		g[b].push_back(a);
+	}
+}
+int dfs2(int i){
+	stack<int> st;
+	st.push(i);
+	int val=1;
+	vis[i]=true;
+	while(!st.empty()){
+		int u = st.top();
+		st.pop();
+		for(auto v: g[u]){
+			if(!vis[v] && !(on[u] && on[v])){
+				vis[v]=true;
+				st.push(v);
+				val++;
+			}
+		}
+	}
+	return val;
+}
+void dfs1(int i, int p=-1){
+	stack<int> st;
+	st.push(i);
+	idx[i]=lowlink[i]=id++;
+	while(!st.empty()){
+		int u = st.top();
+		st.pop();
+		for(auto v: g[u]){
+			if(idx[v]==-1){
+				dfs1(v,u);
+				lowlink[u] = min(lowlink[v],lowlink[u]);
+				if(idx[u] < lowlink[v]){
+					on[u]=on[v]=true;
+				}
+			}else{
+				if(v!=p){
+					lowlink[u] = min(lowlink[u],idx[v]);
+				}
+			}
+		}
+	}
+}
+void solveTarjan(){
+	for(int i=1;i<=n;i++){
+		if(idx[i]==-1){
+			dfs1(i);
+		}
+	}
+}
+void solvedfs(){
+	for(int i=1;i<=n;i++){
+		if(!vis[i]){
+			int x = dfs2(i);
+			myvec.push_back(x);
+		}
+	}
+}
+void makeAns(){
+	ans=0;
+	int ss = accumulate(myvec.begin(),myvec.end(),0);
+	for(int i=0;i<(int)myvec.size();i++){
+		ans += (myvec[i])*(ss-myvec[i]);
+	}
+}
+void print(){
+	ans/=2;
+	int tt =(  n*(n-1) )/2;
+	cout << fixed << setprecision(5) << (long double)ans / (tt) << endl;
+}
+signed main() {
+	input();
+	solveTarjan();
+	solvedfs();
+	makeAns();
+	print();
+	return 0;
+}
