@@ -1,0 +1,75 @@
+#include<bits/stdc++.h>
+#define f first
+#define s second
+using namespace std;
+vector<pair<int,int> > moves = {{0,-1},{0,1},{-1,0},{1,0}};
+int bfs(pair<int,pair<int,int> > t, vector<vector<int> >& arr, int n, int m){
+	vector<vector<bool> > vis(n,vector<bool>(m,false));
+	int mn,curr;
+	curr = arr[t.s.f][t.s.s];
+	mn = INT_MAX;
+	queue<pair<int,int> > q;
+	q.push(make_pair(t.s.f,t.s.s));
+    vis[t.s.f][t.s.s]=true;
+	while(!q.empty()){
+        pair<int,int> z = q.front();
+        q.pop();
+        for(int i=0;i<4;i++){
+            int  x = moves[i].f + z.f;
+            int  y = moves[i].s + z.s;
+            if(x >=0 && x < n && y>=0 && y < m && !vis[x][y]){
+               	if(arr[x][y] < curr || ((arr[x][y]==curr) && (x==0 || x==n || y==0 || y==m))){
+                    // leaking
+                    return 0;
+                }else if(arr[x][y]==curr ){
+                    vis[x][y]=true;
+                    q.push(make_pair(x,y));
+                }else{
+                    mn = min(mn,arr[x][y]-curr);
+                }
+            }
+        }
+	}
+	int c=0;
+	for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+            if(vis[i][j]){
+                arr[i][j]+=mn;
+                c+=mn;
+            }
+        }
+	}
+	return c;
+}
+int solve(vector<vector<int> >& arr, int n, int m){
+	vector<pair<int,pair<int,int> > > pos;
+	for(int i=1;i<(n-1);i++){
+		for(int j=1;j<(m-1);j++){
+			pos.push_back(make_pair(arr[i][j],make_pair(i,j)));
+		}
+	}
+	int w=0;
+	sort(pos.begin(),pos.end());
+	for(int i=0;i<(int)(pos).size();i++){
+        w+=bfs(pos[i],arr,n,m);
+    }
+	return w;
+}
+int main(){
+  //  freopen("in.txt","r",stdin);
+	int t;
+	cin >> t;
+	while(t--){
+		int n, m;
+		cin >> n >> m;
+		vector<vector<int> > arr(n,vector<int>(m,0));
+		for(int i=0;i<n;i++){
+			for(int j=0;j<m;j++){
+				cin >> arr[i][j];
+			}
+		}
+		int ans = solve(arr,n,m);
+		cout << ans << endl;
+	}
+	return 0;
+}
