@@ -1,0 +1,48 @@
+#include <bits/stdc++.h>
+using namespace std;
+const int N = 1e4 + 10;
+vector<int> g[N];
+vector<int> ans;
+vector<int> inDegree(N,0);
+int n,m;
+void topo(){
+	for(int i=1;i<=n;i++){
+		for(auto x: g[i]){
+			inDegree[x]+=1;
+		}
+	}
+	priority_queue<int,vector<int> , greater<int> > pq;
+	for(int i=1;i<=n;i++){
+		if(inDegree[i]==0){
+			pq.push(i);
+		}
+	}
+	while(!pq.empty()){
+		int t = pq.top();
+		ans.push_back(t);
+		pq.pop();
+		for(auto x: g[t]){
+			inDegree[x]-=1;
+			if(inDegree[x]==0){
+				pq.push(x);
+			}
+		}
+	}
+	if(ans.size()==n){
+		for(auto x: ans){
+			cout << x << " ";
+		}
+	}else{
+		cout << "Sandro fails.";
+	}
+}
+int main(){
+	cin >> n >> m;
+	int x,y;
+	for(int i=1;i<=m;i++){
+		cin >> x >> y;
+		g[x].push_back(y);
+	}
+	topo();
+	return 0;
+}
