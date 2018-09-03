@@ -1,0 +1,90 @@
+#include<bits/stdc++.h>
+#define f first
+#define s second
+#define INF 99999999
+using namespace std;
+vector<pair<int,int> > moves = {{1,0},{-1,0},{0,1},{0,-1}};
+int dijkstra(int src, int v, int trea, vector<pair<int,int> > g[]){
+	vector<int> D(v);
+	for(int i=0;i<v;i++){
+		D[i]=INF;
+	}
+	D[src]=0;
+	priority_queue<pair<int,int> > pq;
+	pq.push({0,src});
+	while(!pq.empty()){
+		int u = pq.top().s , dist = pq.top().f;
+		pq.pop();
+		if(dist > D[u]){
+			continue;
+			// already minimized
+		}
+		for(pair<int,int> pr: g[u]){
+			int next_dist = dist + pr.s;
+			int v = pr.f;
+			if(D[v] > next_dist){
+				D[v] = next_dist;
+				pq.push({D[v],v});
+			}
+		}
+	}
+	return 2*D[trea];
+}
+int main(){
+	int n,m,lim;
+	cin >> n >> m >> lim;
+	char arr[n][m];
+	int  num[n][m];
+	int v=0;
+	int ent = -1;
+	int trea = -1;
+	int II,JJ;
+	for(int i=0;i<n;i++){
+		for(int j=0;j<m;j++){
+			cin >> arr[i][j];
+			if(arr[i][j]!='#'){
+					v++;
+					num[i][j] = v-1;
+					if(arr[i][j]=='@'){
+						ent = num[i][j];
+						II = i;
+						JJ = j;
+					}
+					if(arr[i][j]=='x'){
+						trea = num[i][j];
+					}
+			}else{
+				num[i][j]=-1;
+			}
+		}
+	}
+	vector<pair<int,int> > g[v];
+	bool vis[n][m];
+	for(int i=0;i<n;i++){
+		for(int j=0;j<m;j++){
+			vis[i][j]=false;
+		}
+	}
+	stack<pair<int,int> > S;
+	S.push({II,JJ});
+	vis[II][JJ]=true;
+	while(!S.empty()){
+		pair<int,int> pr = S.top();
+		S.pop();
+		for(pair<int,int> x: moves){
+			int cx = pr.f + x.f;
+			int cy = pr.s + x.s;
+			if(cx<n && cx >=0 && cy < m && cy >=0 && arr[cx][cy]!='#' && !vis[cx][cy]){
+				int w = (arr[cx][cy]=='s')? 1 : 0 ;
+				g[num[pr.f][pr.s]].push_back({num[cx][cy],w});
+				g[num[cx][cy]].push_back({num[pr.f][pr.s],w});
+				vis[cx][cy]=true;
+				S.push({cx,cy});
+			}
+		}
+	}
+//	cout << "Graph done\n";
+	if(dijkstra(ent,v,trea,g) <=lim)puts("SUCCESS");
+	else puts("IMPOSSIBLE");
+	return 0;
+}
