@@ -1,0 +1,52 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int N = 2e3+10;
+vector<int> g[N];
+vector<int> inc(N,0);
+vector<int> vis(N,-1);
+int n;
+vector<int> cd(N,-1);
+int bfs(int i){
+	if(inc[i]==0)return -1;
+	int VisId = i;
+	cd[i]=0;
+	queue<int> q;
+	q.push(i);
+	while(!q.empty()){
+		int u = q.front();
+		q.pop();
+		for(auto v: g[u]){
+			if(!(vis[v]==VisId)){
+				vis[v]=VisId;
+				cd[v] = cd[u]+1;
+				if(v==i)return cd[v];
+				q.push(v);
+			}
+		}
+	}
+	return -1;
+}
+int main(){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	cin >> n;
+	int a;
+	for(int i=1;i<=n;i++){
+		for(int j=1;j<=n;j++){
+			cin >> a ;
+				if(a){
+					g[i].push_back(j);
+					inc[j]++;
+				}
+		}
+	}
+	for(int i=1;i<=n;i++){
+		 a = bfs(i);
+		 if(a==-1){
+		 	cout << "NO WAY\n";
+		 }else{
+		 	cout << a << "\n";
+		 }
+	}
+	return 0;
+}
