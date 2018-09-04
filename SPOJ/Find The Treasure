@@ -1,0 +1,71 @@
+#include<bits/stdc++.h>
+using namespace std;
+const int N = 1e5+10;
+int n;
+set<int> g[N];
+vector<bool> vis(N,false);
+vector<int> p(N,-1);
+vector<int> cd(N,-1);
+void bfs(int i){
+	cd[i]=0;
+	vis[i]=true;
+	queue<int> q;
+	q.push(i);
+	while(!q.empty()){
+		int u = q.front();
+		q.pop();
+		for(int v: g[u]){
+			if(!vis[v]){
+				vis[v]=true;
+				cd[v]=1+cd[u];
+				p[v] = u;
+				q.push(v);
+			}
+		}
+	}
+ 
+}
+void refresh(){
+	for(int i=0;i<N;i++){
+		g[i].clear();
+		vis[i]=false;
+		p[i]=-1;
+		cd[i]=-1;
+	}
+}
+int main(){
+	ios_base::sync_with_stdio(false);
+	cin.tie(NULL);
+	int tt;
+	cin >> tt;
+	while(tt--){
+		refresh();
+		cin >> n ;
+		for(int i=1;i<n;i++){
+			int m,b;
+			cin >> m;
+			while(m--){
+				cin >> b;
+				g[i].insert(b);
+			}
+		}
+		bfs(1);
+		if(!vis[n]){
+			cout << "-1\n";
+		}else{
+			cout << cd[n] << "\n";
+			vector<int> path;
+			for(int u = p[n]; u!=-1;){
+				path.push_back(u);
+				u = p[u];
+			}
+			reverse(path.begin(),path.end());
+			for(int pi : path){
+				cout << pi << " ";
+			}
+			cout << "\n";
+		}
+		cout << "\n";
+	}
+	return 0;
+} 
